@@ -25,19 +25,20 @@ module processor(
        input Rst
     );
     
+  
     IF fetch(
         //General
          .Clk(Clk),
          .Rst(Rst),
         //Branch Unit
-         .FlushPipeandPC(),
-         .WriteEnable(),
-         .CB_o(),
+         .FlushPipeandPC(FlushPipeandPC),
+         .WriteEnable(WriteEnable),
+         .CB_o(CrtlOut),
         //Stall Unit
-         .PCStall(),    
-         .IF_ID_Stall(),
-         .IF_ID_Flush(),
-         .Imiss(),
+         .PCStall(PCStall),    
+         .IF_ID_Stall(IF_ID_Stall),
+         .IF_ID_Flush(IF_ID_Flush),
+         .Imiss(Imiss),
         //From Execute 
          .JmpAddr(),
          .JmpInstrAddr(),
@@ -65,8 +66,8 @@ module processor(
         /*Input to stall or flush*/
          .stall(),
          .flush(),
-        /*Output pipeline registers to execute*/
-            /*Fowarded from fetch*/
+         /*Output pipeline registers to execute*/
+         /*Fowarded from fetch*/
          .oIC(),
          .oPPCCB(),
          .oPC(), 
@@ -123,26 +124,51 @@ module processor(
          .o_wb_reg_dst_s()// select mux out
     );
     
-    FU forward(
-       ////////////////////////////ID_EX REG
-        .IFex__Need_RS1(),
-        .IFex__Need_RS2(),
-        .IDex__Need_Rs2(),
-        .IDex__Need_Rs1(),
-        .IDex__Rs1(),
-        .IDex__Rs2(),
-       ////////////////////////////EX_MEM REG
-        .EXmem__Read_MEM(),
-        .EXmem__R_WE(),
-        .EXmem__Rdst(),
-        .EXmem__RDst_S(),
-       ////////////////////////////MEM_WB REG
-        .MEMwb__Rdst(),
-        .MEMwb__R_WE(),
-       ////////////////////////////OUTPUT
-        .OP1_ExS(),
-        .OP2_ExS(),
-        .Need_Stall()
-    );
+    HazardUnit HazardU(
+         //FORWARD UNIT
+         .IDex__Need_Rs2(),
+         .IDex__Need_Rs1(),
+         .IDex__Rs1(),
+         .IDex__Rs2(),
+         .EXmem__Read_MEM(),
+         .EXmem__R_WE(),
+         .EXmem__Rdst(),
+         .EXmem__RDst_S(),
+         .MEMwb__Rdst(),
+         .MEMwb__R_WE(),
+         .OP1_ExS(),
+         .OP2_ExS(),
+
+         //BRANCH UNIT
+         .PcMatchValid(),
+         .BranchInstr(),
+         .JumpInstr(),
+         .PredicEqRes(),
+         .CtrlIn(),
+         .CtrlOut(CrtlOut),
+         .FlushPipePC(FlushPipeandPC),
+         .WriteEnable(WriteEnable),
+         .NPC(),
+        
+          //CHECK CC
+         .cc4(),            // The condition code bits
+         .cond_bits(),
+          
+          //STALL UNIT
+         .i_DCache_Miss(), // From Data Cache in MEM stage
+         .i_ICache_Miss(Imiss), // From Instruction Cache in IF stage
+         .o_PC_Stall(PCStall),   // To IF stage
+         .o_IFID_Stall(IF_ID_Stall), // To IFID pipeline register
+         .o_IDEX_Stall(), // To IDEX pipeline register
+         .o_EXMA_Stall(), // To EXMA pipeline register
+         .o_EXMA_Flush(), // To flush EXMA pipleine Register 
+         .o_MAWB_Flush(), // To flush MAWB pipeline register
+       
+          //Pipeline Registers 
+         .Flush_IF_ID(IF_ID_Flush),
+         .Flush_ID_EX()
+        );
+    
+ 
     
 endmodule
