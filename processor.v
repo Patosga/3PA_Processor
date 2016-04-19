@@ -43,12 +43,11 @@ module processor(
          .JmpAddr(),
          .JmpInstrAddr(),
         //To Pipeline Registers
-         .IR(IR),
-         .PC(PC),
-         .InstrAddr(IAddr),
-         .PCSource(PCSrc),
-         .PPCCB(PPCCB)
-
+         .IR(ID_IR),
+         .PC(ID_PC),
+         .InstrAddr(ID_IAddr),
+         .PCSource(ID_PCSrc),
+         .PPCCB(ID_PPCCB)
     );
 
     IDControlUnit decode(
@@ -65,8 +64,8 @@ module processor(
          .iValid(ID_PCSrc),
          .iIR(ID_IR),
         /*Input to stall or flush*/
-         .stall(ID_Stall),
-         .flush(ID_Flush),
+         .stall(IDEX_Stall),
+         .flush(IDEX_Flush),
         /*Output pipeline registers to execute*/
             /*Fowarded from fetch*/
 
@@ -162,14 +161,14 @@ module processor(
          .i_ICache_Miss(Imiss), // From Instruction Cache in IF stage
          .o_PC_Stall(PCStall),   // To IF stage
          .o_IFID_Stall(IF_ID_Stall), // To IFID pipeline register
-         .o_IDEX_Stall(), // To IDEX pipeline register
+         .o_IDEX_Stall(IDEX_Stall), // To IDEX pipeline register
          .o_EXMA_Stall(), // To EXMA pipeline register
          .o_EXMA_Flush(), // To flush EXMA pipleine Register
          .o_MAWB_Flush(), // To flush MAWB pipeline register
 
           //Pipeline Registers
          .Flush_IF_ID(IF_ID_Flush),
-         .Flush_ID_EX()
+         .Flush_ID_EX(IDEX_Flush)
         );
 
 
