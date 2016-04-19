@@ -48,7 +48,6 @@ module processor(
          .InstrAddr(IAddr),
          .PCSource(PCSrc),
          .PPCCB(PPCCB)
-    
     );
     
     IDControlUnit decode(
