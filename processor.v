@@ -30,41 +30,41 @@ module processor(
          .Clk(Clk),
          .Rst(Rst),
         //Branch Unit
-         .FlushPipeandPC(),
-         .WriteEnable(),
-         .CB_o(),
+         .FlushPipeandPC(ID_FlushPipeandPC),
+         .WriteEnable(ID_WriteEnable),
+         .CB_o(ID_CB_o),
         //Stall Unit
-         .PCStall(),    
-         .IF_ID_Stall(),
-         .IF_ID_Flush(),
-         .Imiss(),
+         .PCStall(ID_PCStall),    
+         .IF_ID_Stall(IF_ID_Stall),
+         .IF_ID_Flush(IF_ID_Flush),
+         .Imiss(ID_Imiss),
         //From Execute 
-         .JmpAddr(),
-         .JmpInstrAddr(),
+         .JmpAddr(ID_JmpAddr),
+         .JmpInstrAddr(ID_JmpInstrAddr),
         //To Pipeline Registers
-         .IR(IR),
-         .PC(PC),
-         .InstrAddr(IAddr),
-         .PCSource(PCSrc),
-         .PPCCB(PPCCB)
-    
+         .IR(ID_IR),
+         .PC(ID_PC),
+         .InstrAddr(ID_IAddr),
+         .PCSource(ID_PCSrc),
+         .PPCCB(ID_PPCCB)
     );
     
     IDControlUnit decode(
          .Clk(Clk),
          .reset(Rst),
-         .rf_we(),
-         .WAddr(),
-         .WData(),
+         /*Input pipeline registers from writeback*/
+         .rf_we(WB_RWE),
+         .WAddr(WB_RdsAddr),
+         .WData(WB_RdsData),
         /*Input pipeline registers from fetch*/
-         .iIC(IAddr),
-         .iPPCCB(PPCCB),
-         .iPC(PC), 
-         .iValid(),
-         .iIR(IR),
+         .iIC(ID_IAddr),
+         .iPPCCB(ID_PPCCB),
+         .iPC(ID_PC), 
+         .iValid(ID_PCSrc),
+         .iIR(ID_IR),
         /*Input to stall or flush*/
-         .stall(),
-         .flush(),
+         .stall(ID_Stall),
+         .flush(ID_Flush),
         /*Output pipeline registers to execute*/
             /*Fowarded from fetch*/
          .oIC(),
@@ -117,9 +117,9 @@ module processor(
          .i_wb_alu_rslt(), // result of the ALU
          .i_wb_cntrl(),// bits [1:0] slect mux, bit 2 reg_write_rf_in
          .i_wb_rdst(),// input of Rdst
-         .o_wb_rdst(),// output of Rdst
-         .o_wb_reg_write_rf(),//output of the third input control bit
-         .o_wb_mux(),// Data for the input of the register file
+         .o_wb_rdst(WB_RdsAddr),// output of Rdst
+         .o_wb_reg_write_rf(WB_RWE),//output of the third input control bit
+         .o_wb_mux(WB_RdsData),// Data for the input of the register file
          .o_wb_reg_dst_s()// select mux out
     );
     
