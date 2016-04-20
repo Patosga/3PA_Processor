@@ -140,29 +140,29 @@ module processor(
         .o_need_Rs2(),
         
         /*EXMA register output data*/
-        .o_EXMA_WB(),
-        .o_EXMA_MEM(),
-        .o_EXMA_ALU_rslt(),
-        .o_EXMA_Rs2_val(),
-        .o_EXMA_Rs2_addr(),
-        .o_EXMA_PC(),
-        .o_EXMA_Rds_addr()
+        .o_EXMA_WB(WB_EX_MA),
+        .o_EXMA_MEM(MA_EX_MA),
+        .o_EXMA_ALU_rslt(ALUrslt_EX_MA),
+        .o_EXMA_Rs2_val(Rs2val_EX_MA),
+        .o_EXMA_Rs2_addr(Rs2addr_EX_MA),
+        .o_EXMA_PC(PC_EX_MA),
+        .o_EXMA_Rds_addr(Rdsaddr_EX_MA)
         );
 
     stageMA MAccesss(
         .clk(Clk),//clock
         .st(Rst),//reset
-        .i_ma_WB(),//write_back control signal
-        .i_ma_MA(),//memory access control signals
-        .i_ma_ALU_rslt(),// resultado da ALU
-        .i_ma_Rs2_val(), //valor do regiter source 2
-        .i_ma_Rs2_addr(), //endere?o do registo do register source 2
-        .i_ma_PC(), //program counter
-        .i_ma_Rdst(), //registo de destino
-        .i_ma_mux_wb(),//resultado do write back (forwarding)
+        .i_ma_WB(WB_EX_MA),//write_back control signal
+        .i_ma_MA(MA_EX_MA),//memory access control signals
+        .i_ma_ALU_rslt(ALUrslt_EX_MA),// resultado da ALU
+        .i_ma_Rs2_val(Rs2val_EX_MA), //valor do regiter source 2
+        .i_ma_Rs2_addr(Rs2addr_EX_MA), //endere?o do registo do register source 2
+        .i_ma_PC(PC_EX_MA), //program counter
+        .i_ma_Rdst(Rdsaddr_EX_MA), //registo de destino
+        .i_ma_mux_wb(DataFromWB),//resultado do write back (forwarding)
         .i_OP1_MemS(), //forwrding unit signal
-        .i_ma_flush(),
-        .i_ma_stall(),
+        .i_ma_flush(MAWB_Flush),
+        .i_ma_stall(0), // Este Stall fica sempre descligado
 
         .o_ma_PC(PCSrc_MA_WB), //program counter para ser colocado no pipeline register MA/WB
         .o_ma_Rds(RDS_MA_WB), //endere�o do registo de sa�da
@@ -170,7 +170,7 @@ module processor(
         .o_ma_WB(o_ma_WB), //sinais de controlo da write back a serem colocados no pipeline register MA/WB
         .o_ma_EX_MEM_Rs2(),//colocar o endere�o do source register 2 na forward unit,
         .o_ma_EX_MEM_MA(),
-        .o_miss(), // falha no acesso de mem�ria
+        .o_miss(Dmiss), // falha no acesso de mem�ria
         .o_ma_mem_out(Data_Mem_MA_WB)
     );
 
@@ -183,7 +183,7 @@ module processor(
         .i_wb_alu_rslt(ALU_Rslt_MA_WB), // result of the ALU
         .i_wb_cntrl(o_ma_WB),// bits [1:0] slect mux, bit 2 reg_write_rf_in
         .i_wb_rdst(RDS_MA_WB),// input of Rdst
-        .o_wb_rdst(),// output of Rdst
+        .o_wb_rdst(),// output of Rdst to forward
         .o_wb_reg_write_rf(),//output of the third input control bit
         .o_wb_mux(DataFromWB),// Data for the input of the register file
         .o_wb_reg_dst_s()// select mux out
@@ -220,14 +220,14 @@ module processor(
          .cond_bits(),
 
           //STALL UNIT
-         .i_DCache_Miss(), // From Data Cache in MEM stage
+         .i_DCache_Miss(Dmiss), // From Data Cache in MEM stage
          .i_ICache_Miss(Imiss), // From Instruction Cache in IF stage
          .o_PC_Stall(PCStall),   // To IF stage
          .o_IFID_Stall(IF_ID_Stall), // To IFID pipeline register
          .o_IDEX_Stall(IDEX_Stall), // To IDEX pipeline register
          .o_EXMA_Stall(EX_EXMA_Stall), // To EXMA pipeline register
          .o_EXMA_Flush(EX_EXMA_Flush), // To flush EXMA pipleine Register
-         .o_MAWB_Flush(), // To flush MAWB pipeline register
+         .o_MAWB_Flush(MAWB_Flush), // To flush MAWB pipeline register
 
           //Pipeline Registers
          .Flush_IF_ID(IF_ID_Flush),
