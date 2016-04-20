@@ -53,6 +53,7 @@ module processor(
     IDControlUnit decode(
          .Clk(Clk),
          .reset(Rst),
+        
          /*Input pipeline registers from writeback*/
          .rf_we(WB_RWE),
          .WAddr(WB_RdsAddr),
@@ -69,22 +70,84 @@ module processor(
         /*Output pipeline registers to execute*/
             /*Fowarded from fetch*/
 
-         .oIC(),
-         .oPPCCB(),
-         .oPC(),
-         .oValid(),
+         .oIC(EX_IC),
+         .oPPCCB(EX_PPCCB),
+         .oPC(EX_PC),
+         .oValid(EX_Valid),
             /*Produced outputs to execute*/
-         .oRDS(),
-         .oRS1(),
-         .oRS2(),
-         .oOP1(),
-         .oOP2(),
-         .oIM(),
+         .oRDS(EX_Rds),
+         .oRS1(EX_Rs1),
+         .oRS2(EX_Rs2),
+         .oOP1(EX_Op1),
+         .oOP2(EX_Op2),
+         .oIM(EX_Im),
 
-         .oEX(),
-         .oMA(),
-         .oWB()
+         .oEX(EX_ExCtrl),
+         .oMA(EX_MA),
+         .oWB(EX_WB)
     );
+
+    EX_Stage execute(
+        /*Input clock and reset*/
+        .clk(Clk),
+        .reset(Rst),
+        
+        /*Fowarding data from WB and MEM Stage*/
+        .i_Data_From_WB(DataFromWB),
+        .i_Data_From_MEM(ALU_Rslt_MA_WB),
+        
+        /*Foward Unit Control Signals*/
+        .i_Fwrd_Ctrl1(EX_Op1_ExS),
+        .i_Fwrd_Ctrl2(EX_Op2_ExS),
+        
+        /*Stall Unit Control Signal*/
+        .i_EXMA_flush(EX_EXMA_Flush),
+        .i_EXMA_stall(EX_EXMA_Stall),
+        
+        /*Branch Unit Control Signal*/
+        .i_NPC_Ctrl(EX_NPC),
+        
+        /*Input data from IDEX register*/
+        .i_WB_Ctrl(EX_WB),
+        .i_MEM_Ctrl(EX_MA),
+        
+        .i_Ex_Ctrl(EX_ExCtrl),
+        .i_Valid_Bit(EX_Valid),
+        .i_Rs1(EX_Rs1),             //OP1
+        .i_Rs2(EX_Rs2),             //OP2
+        .i_Immediate(EX_Im),        //  
+        .i_Rs1_addr(EX_Op1),
+        .i_Rs2_addr(EX_Op2),
+        .i_Rds_addr(EX_Rds),
+        .i_PC(EX_PC), 
+        .i_PPCCB(EX_PPCCB),
+        .i_IC(EX_IC),
+        
+        /*External Outputs data and signals(No Connection to the Pipeline Register)*/
+        .o_CB(),
+        .o_Valid_Bit(),
+        .o_Jmp_Ctrl(),
+        .o_Branch_Ctrl(),
+        .o_CondBits(),
+        .o_CCodes(),
+        .o_PPC_Eq(),
+        .o_IC(),
+        .o_New_PC(),
+        .o_Rs1_addr(),
+        .o_Rs2_addr(),
+        .o_Rds_addr(),
+        .o_need_Rs1(),
+        .o_need_Rs2(),
+        
+        /*EXMA register output data*/
+        .o_EXMA_WB(),
+        .o_EXMA_MEM(),
+        .o_EXMA_ALU_rslt(),
+        .o_EXMA_Rs2_val(),
+        .o_EXMA_Rs2_addr(),
+        .o_EXMA_PC(),
+        .o_EXMA_Rds_addr()
+        );
 
     stageMA MAccesss(
         .clk(Clk),//clock
@@ -122,7 +185,7 @@ module processor(
         .i_wb_rdst(RDS_MA_WB),// input of Rdst
         .o_wb_rdst(),// output of Rdst
         .o_wb_reg_write_rf(),//output of the third input control bit
-        .o_wb_mux(),// Data for the input of the register file
+        .o_wb_mux(DataFromWB),// Data for the input of the register file
         .o_wb_reg_dst_s()// select mux out
     );
 
@@ -138,8 +201,8 @@ module processor(
          .EXmem__RDst_S(),
          .MEMwb__Rdst(),
          .MEMwb__R_WE(),
-         .OP1_ExS(),
-         .OP2_ExS(),
+         .OP1_ExS(EX_Op1_ExS),
+         .OP2_ExS(EX_Op2_ExS),
 
          //BRANCH UNIT
          .PcMatchValid(),
@@ -150,7 +213,7 @@ module processor(
          .CtrlOut(CrtlOut),
          .FlushPipePC(FlushPipeandPC),
          .WriteEnable(WriteEnable),
-         .NPC(),
+         .NPC(EX_NPC),
 
           //CHECK CC
          .cc4(),            // The condition code bits
@@ -162,8 +225,8 @@ module processor(
          .o_PC_Stall(PCStall),   // To IF stage
          .o_IFID_Stall(IF_ID_Stall), // To IFID pipeline register
          .o_IDEX_Stall(IDEX_Stall), // To IDEX pipeline register
-         .o_EXMA_Stall(), // To EXMA pipeline register
-         .o_EXMA_Flush(), // To flush EXMA pipleine Register
+         .o_EXMA_Stall(EX_EXMA_Stall), // To EXMA pipeline register
+         .o_EXMA_Flush(EX_EXMA_Flush), // To flush EXMA pipleine Register
          .o_MAWB_Flush(), // To flush MAWB pipeline register
 
           //Pipeline Registers
