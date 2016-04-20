@@ -49,17 +49,17 @@ module checkcc(
 
     assign branch_taken = (cond_bits == `BRA)?  1 : 
         (cond_bits == `BNV)? 0 : 
-        (cond_bits == `BCC)? ~cc4[c] :
-        (cond_bits == `BCS)? cc4[c] :
-        (cond_bits == `BVC)? ~cc4[v] :
-        (cond_bits == `BVS)? cc4[v] :
-        (cond_bits == `BEQ)? cc4[z] :
-        (cond_bits == `BNE)? ~cc4[z] : 
-        (cond_bits == `BGE)? (~cc4[n] & ~cc4[v]) | (cc4[n] & cc4[v]) :  
-        (cond_bits == `BLT)? (cc4[n] & ~cc4[v]) | (~cc4[n] & cc4[v]) : 
-        (cond_bits == `BGT)? ~cc4[z] & ((~cc4[n] & ~cc4[v]) | (cc4[n] & cc4[v])) : 
-        (cond_bits == `BLE)? cc4[z] | ((cc4[n] & ~cc4[v]) | (~cc4[n] & cc4[v])) : 
-        (cond_bits == `BPL)? ~cc4[n] :
-        (cond_bits == `BMI)? cc4[n] : 0;
+        (cond_bits == `BCC)? ~cc4[`c] :
+        (cond_bits == `BCS)? cc4[`c] :
+        (cond_bits == `BVC)? ~cc4[`v] :
+        (cond_bits == `BVS)? cc4[`v] :
+        (cond_bits == `BEQ)? cc4[`z] :
+        (cond_bits == `BNE)? ~cc4[`z] : 
+        (cond_bits == `BGE)? (~cc4[`n] & ~cc4[`v]) | (cc4[`n] & cc4[`v]) :  
+        (cond_bits == `BLT)? (cc4[`n] & ~cc4[`v]) | (~cc4[`n] & cc4[`v]) : 
+        (cond_bits == `BGT)? ~cc4[`z] & ((~cc4[`n] & ~cc4[`v]) | (cc4[`n] & cc4[`v])) : 
+        (cond_bits == `BLE)? cc4[`z] | ((cc4[`n] & ~cc4[`v]) | (~cc4[`n] & cc4[`v])) : 
+        (cond_bits == `BPL)? ~cc4[`n] :
+        (cond_bits == `BMI)? cc4[`n] : 0;
         
 endmodule
