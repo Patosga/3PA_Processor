@@ -181,7 +181,7 @@
 `define EXMA_PC_MSB        (`PC_WIDTH - 1 + `EXMA_PC_LSB)
 `define EXMA_PC            `EXMA_PC_MSB : `EXMA_PC_LSB
 
-`define EXMA_RDS_LSB        (`EXMA_RS2ADDR_MSB + 1)
+`define EXMA_RDS_LSB        (`EXMA_PC_MSB + 1)
 `define EXMA_RDS_MSB        (`RDSADDR_WIDTH - 1 + `EXMA_RDS_LSB)
 `define EXMA_RDS            `EXMA_RDS_MSB : `EXMA_RDS_LSB
 

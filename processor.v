@@ -19,6 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
+`include "pipelinedefs.v"
 
 module processor(
        input Clk,
@@ -40,8 +41,8 @@ module processor(
          .IF_ID_Flush(IF_ID_Flush),
          .Imiss(Imiss),
         //From Execute
-         .JmpAddr(),
-         .JmpInstrAddr(),
+         .JmpAddr(JMPAddr),
+         .JmpInstrAddr(JMPIC),
         //To Pipeline Registers
          .IR(ID_IR),
          .PC(ID_PC),
@@ -111,7 +112,7 @@ module processor(
         .i_WB_Ctrl(EX_WB),
         .i_MEM_Ctrl(EX_MA),
         
-        .i_Ex_Ctrl(EX_ExCtrl),
+        .i_EX_Ctrl(EX_ExCtrl),
         .i_Valid_Bit(EX_Valid),
         .i_Rs1(EX_Rs1),             //OP1
         .i_Rs2(EX_Rs2),             //OP2
@@ -124,34 +125,34 @@ module processor(
         .i_IC(EX_IC),
         
         /*External Outputs data and signals(No Connection to the Pipeline Register)*/
-        .o_CB(),
-        .o_Valid_Bit(),
-        .o_Jmp_Ctrl(),
-        .o_Branch_Ctrl(),
-        .o_CondBits(),
-        .o_CCodes(),
-        .o_PPC_Eq(),
-        .o_IC(),
-        .o_New_PC(),
-        .o_Rs1_addr(),
-        .o_Rs2_addr(),
-        .o_Rds_addr(),
-        .o_need_Rs1(),
-        .o_need_Rs2(),
+        .o_CB(BR_CBI),
+        .o_Valid_Bit(BR_Valid),
+        .o_Jmp_Ctrl(BR_JmpCtrl),
+        .o_Branch_Ctrl(BR_BranchCtrl),
+        .o_CondBits(condBits),
+        .o_CCodes(condCodes),
+        .o_PPC_Eq(PPC_Eq),
+        .o_IC(JMPIC),
+        .o_New_PC(JMPAddr),
+        .o_Rs1_addr(w_Rs1_addr),
+        .o_Rs2_addr(w_Rs2_addr),
+        .o_Rds_addr(w_Rds_addr),    //Rds not necessary in ID stage
+        .o_need_Rs1(w_need_Rs1),
+        .o_need_Rs2(w_need_Rs2),
         
         /*EXMA register output data*/
         .o_EXMA_WB(WB_EX_MA),
         .o_EXMA_MEM(MA_EX_MA),
         .o_EXMA_ALU_rslt(ALUrslt_EX_MA),
         .o_EXMA_Rs2_val(Rs2val_EX_MA),
-        .o_EXMA_Rs2_addr(Rs2addr_EX_MA),
+        .o_EXMA_Rs2_addr(Rs2addr_EX_MA), //Not necessary anymore
         .o_EXMA_PC(PC_EX_MA),
         .o_EXMA_Rds_addr(Rdsaddr_EX_MA)
         );
 
     stageMA MAccesss(
         .clk(Clk),//clock
-        .st(Rst),//reset
+        .rst(Rst),//reset
         .i_ma_WB(WB_EX_MA),//write_back control signal
         .i_ma_MA(MA_EX_MA),//memory access control signals
         .i_ma_ALU_rslt(ALUrslt_EX_MA),// resultado da ALU
@@ -160,7 +161,7 @@ module processor(
         .i_ma_PC(PC_EX_MA), //program counter
         .i_ma_Rdst(Rdsaddr_EX_MA), //registo de destino
         .i_ma_mux_wb(DataFromWB),//resultado do write back (forwarding)
-        .i_OP1_MemS(), //forwrding unit signal
+        .i_OP1_MemS(0), //forwrding unit signal, not necessary anymore
         .i_ma_flush(MAWB_Flush),
         .i_ma_stall(0), // Este Stall fica sempre descligado
 
@@ -169,7 +170,7 @@ module processor(
         .o_ALU_rsl(ALU_Rslt_MA_WB), //resultado do ALU a ser colocado no pipeline register MA/WB
         .o_ma_WB(o_ma_WB), //sinais de controlo da write back a serem colocados no pipeline register MA/WB
         .o_ma_EX_MEM_Rs2(),//colocar o endere�o do source register 2 na forward unit,
-        .o_ma_EX_MEM_MA(),
+        .o_ma_EX_MEM_MA(HU_MEM_RW),
         .o_miss(Dmiss), // falha no acesso de mem�ria
         .o_ma_mem_out(Data_Mem_MA_WB)
     );
@@ -183,41 +184,43 @@ module processor(
         .i_wb_alu_rslt(ALU_Rslt_MA_WB), // result of the ALU
         .i_wb_cntrl(o_ma_WB),// bits [1:0] slect mux, bit 2 reg_write_rf_in
         .i_wb_rdst(RDS_MA_WB),// input of Rdst
-        .o_wb_rdst(),// output of Rdst to forward
-        .o_wb_reg_write_rf(),//output of the third input control bit
+        .o_wb_rdst(WB_RdsAddr),// output of Rdst to forward
+        .o_wb_reg_write_rf(WB_RWE),//output of the third input control bit
         .o_wb_mux(DataFromWB),// Data for the input of the register file
         .o_wb_reg_dst_s()// select mux out
     );
 
     HazardUnit HazardU(
          //FORWARD UNIT
-         .IDex__Need_Rs2(),
-         .IDex__Need_Rs1(),
-         .IDex__Rs1(),
-         .IDex__Rs2(),
-         .EXmem__Read_MEM(),
-         .EXmem__R_WE(),
-         .EXmem__Rdst(),
-         .EXmem__RDst_S(),
-         .MEMwb__Rdst(),
-         .MEMwb__R_WE(),
+         
+         .IDex__Need_Rs2(w_need_Rs2),
+         .IDex__Need_Rs1(w_need_Rs1),
+         .IDex__Rs1(w_Rs1_addr),
+         .IDex__Rs2(w_Rs2_addr),
+         .EXmem__RW_MEM(HU_MEM_RW[`MA_RW]),
+         .EXmem__MemEnable(HU_MEM_RW[`MA_EN]),
+         .EXmem__R_WE(MA_EX_MA[`WB_R_WE]),
+         .EXmem__Rdst(Rdsaddr_EX_MA),
+         .EXmem__RDst_S(MA_EX_MA[`WB_RDST_MUX]),
+         .MEMwb__Rdst(WB_RdsAddr),
+         .MEMwb__R_WE(WB_RWE[`WB_R_WE]),
          .OP1_ExS(EX_Op1_ExS),
          .OP2_ExS(EX_Op2_ExS),
 
          //BRANCH UNIT
-         .PcMatchValid(),
-         .BranchInstr(),
-         .JumpInstr(),
-         .PredicEqRes(),
-         .CtrlIn(),
-         .CtrlOut(CrtlOut),
-         .FlushPipePC(FlushPipeandPC),
-         .WriteEnable(WriteEnable),
+         .PcMatchValid(BR_Valid),
+         .BranchInstr(BR_BranchCtrl),
+         .JumpInstr(BR_JmpCtrl),
+         .PredicEqRes(PPC_Eq),
+         .CtrlIn(BR_CBI),
+         .CtrlOut(ID_CB_o),
+         .FlushPipePC(ID_FlushPipeandPC),
+         .WriteEnable(ID_WriteEnable),
          .NPC(EX_NPC),
 
           //CHECK CC
-         .cc4(),            // The condition code bits
-         .cond_bits(),
+         .cc4(condCodes),            // The condition code bits
+         .cond_bits(condBits),
 
           //STALL UNIT
          .i_DCache_Miss(Dmiss), // From Data Cache in MEM stage

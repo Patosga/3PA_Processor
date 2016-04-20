@@ -28,7 +28,8 @@ module FU(
     input [4:0] IDex__Rs1,
     input [4:0] IDex__Rs2,
     ////////////////////////////EX_MEM REG
-    input EXmem__Read_MEM,
+    input EXmem__RW_MEM,
+    input EXmem__MemEnable,
     input EXmem__R_WE,
     input [4:0] EXmem__Rdst,
     input [1:0] EXmem__RDst_S,
@@ -49,7 +50,7 @@ module FU(
                      ( (MEMwb__R_WE) && (IDex__Need_Rs2) && (EXmem__Rdst!=IDex__Rs2) && (MEMwb__Rdst==IDex__Rs2) )       ?   2'b01: 
                                                                                                                              2'b00;
                                                                                                                             
-    assign Need_Stall = ( (EXmem__Read_MEM) && ( ((IDex__Need_Rs1) && (EXmem__Rdst==IDex__Rs1)) || ((IDex__Need_Rs2) && (EXmem__Rdst==IDex__Rs2)) ))     ?   1'b1:
+    assign Need_Stall = ( (!EXmem__RW_MEM && EXmem__MemEnable) && ( ((IDex__Need_Rs1) && (EXmem__Rdst==IDex__Rs1)) || ((IDex__Need_Rs2) && (EXmem__Rdst==IDex__Rs2)) ))     ?   1'b1:
                                                                                                                                                              1'b0;
                               
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

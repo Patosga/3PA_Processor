@@ -127,6 +127,6 @@ module HazardUnit(
          );
          
      assign Flush_IF_ID =  FlushPipePC | o_IFID_Flush;
-     assign Flush_ID_EX = FlushPipePC | o_IDEX_Flush;
+     assign Flush_ID_EX = FlushPipePC /*| o_IDEX_Flush*/;
     
 endmodule
