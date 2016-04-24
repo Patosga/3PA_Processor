@@ -26,6 +26,13 @@ module processor(
        input Rst
     );
 
+    wire [1:0] ID_CB_o;
+    wire [31:0] JMPIC;
+    wire [31:0] JMPAddr;
+    wire [31:0] ID_IR;
+    wire [31:0] ID_PC;
+    wire [31:0] ID_IAddr;
+    wire [33:0] ID_PPCCB;
 
     IF fetch(
         //General
@@ -34,7 +41,7 @@ module processor(
         //Branch Unit
          .FlushPipeandPC(ID_FlushPipeandPC),
          .WriteEnable(ID_WriteEnable),
-         .CB_o(ID_CB_o),
+         .CB_o(ID_CB_o),  
         //Stall Unit
          .PCStall(PCStall),
          .IF_ID_Stall(IF_ID_Stall),
@@ -51,6 +58,23 @@ module processor(
          .PPCCB(ID_PPCCB)
     );
 
+    //wire WB_RWE;
+    
+    wire [4:0] WB_RdsAddr;
+    //wire [31:0] WB_RdsData;
+    wire [31:0] EX_IC;
+    wire [33:0] EX_PPCCB;
+    wire [31:0] EX_PC;
+    wire [4:0] EX_Rds;
+    /*wire [4:0] EX_Rs1;
+    wire [4:0] EX_Rs2;*/
+    wire [31:0] EX_Op1;
+    wire [31:0] EX_Op2;
+    wire [31:0] EX_Im;
+    wire [14:0] EX_ExCtrl;
+    wire [1:0] EX_MA;
+    wire [2:0] EX_WB;
+    
     IDControlUnit decode(
          .Clk(Clk),
          .reset(Rst),
@@ -58,7 +82,7 @@ module processor(
          /*Input pipeline registers from writeback*/
          .rf_we(WB_RWE),
          .WAddr(WB_RdsAddr),
-         .WData(WB_RdsData),
+         .WData(DataFromWB),
         /*Input pipeline registers from fetch*/
          .iIC(ID_IAddr),
          .iPPCCB(ID_PPCCB),
@@ -74,7 +98,7 @@ module processor(
          .oIC(EX_IC),
          .oPPCCB(EX_PPCCB),
          .oPC(EX_PC),
-         .oValid(EX_Valid),
+         .oValid(EX_Valid), 
             /*Produced outputs to execute*/
          .oRDS(EX_Rds),
          .oRS1(EX_Rs1),
@@ -88,7 +112,38 @@ module processor(
          .oWB(EX_WB)
     );
 
-    EX_Stage execute(
+        wire [31:0] DataFromWB;
+        wire [31:0] ALU_Rslt_MA_WB;              
+        wire [1:0] EX_Op1_ExS;
+        wire [1:0] EX_Op2_ExS;
+        wire [1:0] EX_NPC;
+        /*wire [2:0] EX_WB;
+        wire [1:0] EX_MA;        
+        wire [14:0] EX_ExCtrl;*/
+        wire [4:0] EX_Rs1;             //OP1
+        wire [4:0] EX_Rs2;             //OP2
+        /*wire [31:0] EX_Im;       //  
+        wire [4:0] EX_Op1;
+        wire [4:0] EX_Op2;
+        wire [4:0] EX_Rds;
+        wire [31:0] EX_PC; 
+        wire [33:0] EX_PPCCB;
+        wire [32:0] EX_IC;*/
+        wire [1:0] BR_CBI;        
+        wire [3:0] condBits;
+        wire [3:0] condCodes;
+        wire [4:0] w_Rs1_addr;
+        wire [4:0] w_Rs2_addr;
+        wire [4:0] w_Rds_addr;    //Rds not necessary in ID stage
+        wire [2:0] WB_EX_MA;
+        wire [1:0] MA_EX_MA;
+        wire [31:0] ALUrslt_EX_MA;
+        wire [31:0] Rs2val_EX_MA;
+        wire [4:0] Rs2addr_EX_MA; //Not necessary anymore
+        wire [31:0] PC_EX_MA;
+        wire [4:0] Rdsaddr_EX_MA;
+        
+            EX_Stage execute(
         /*Input clock and reset*/
         .clk(Clk),
         .reset(Rst),
@@ -106,19 +161,20 @@ module processor(
         .i_EXMA_stall(EX_EXMA_Stall),
         
         /*Branch Unit Control Signal*/
-        .i_NPC_Ctrl(EX_NPC),
+        .i_NPC_Ctrl(EX_NPC[0]),
         
         /*Input data from IDEX register*/
         .i_WB_Ctrl(EX_WB),
         .i_MEM_Ctrl(EX_MA),
         
         .i_EX_Ctrl(EX_ExCtrl),
+        .i_PC_Match(EX_Valid),
         .i_Valid_Bit(EX_Valid),
-        .i_Rs1(EX_Rs1),             //OP1
-        .i_Rs2(EX_Rs2),             //OP2
+        .i_Rs1(EX_Op1),             //OP1
+        .i_Rs2(EX_Op2),             //OP2
         .i_Immediate(EX_Im),        //  
-        .i_Rs1_addr(EX_Op1),
-        .i_Rs2_addr(EX_Op2),
+        .i_Rs1_addr(EX_Rs1),
+        .i_Rs2_addr(EX_Rs2),
         .i_Rds_addr(EX_Rds),
         .i_PC(EX_PC), 
         .i_PPCCB(EX_PPCCB),
@@ -150,6 +206,20 @@ module processor(
         .o_EXMA_Rds_addr(Rdsaddr_EX_MA)
         );
 
+        /*wire [2:0] WB_EX_MA;
+        wire [1:0] MA_EX_MA;
+        wire [31:0] ALUrslt_EX_MA;
+        wire [31:0] Rs2val_EX_MA;
+        wire [4:0] Rs2addr_EX_MA;
+        wire [31:0] PC_EX_MA;
+        wire [4:0] Rdsaddr_EX_MA;
+        wire [31:0] DataFromWB;*/
+        wire [31:0] PCSrc_MA_WB;
+        wire [4:0] RDS_MA_WB;
+        //wire [31:0] ALU_Rslt_MA_WB;
+        wire [2:0] o_ma_WB;
+        wire [31:0] Data_Mem_MA_WB;              
+        
     stageMA MAccesss(
         .clk(Clk),//clock
         .rst(Rst),//reset
@@ -166,15 +236,24 @@ module processor(
         .i_ma_stall(0), // Este Stall fica sempre descligado
 
         .o_ma_PC(PCSrc_MA_WB), //program counter para ser colocado no pipeline register MA/WB
-        .o_ma_Rds(RDS_MA_WB), //endere�o do registo de sa�da
-        .o_ALU_rsl(ALU_Rslt_MA_WB), //resultado do ALU a ser colocado no pipeline register MA/WB
+        .o_ma_Rdst(RDS_MA_WB), //endere�o do registo de sa�da
+        .o_ma_ALU_rslt(ALU_Rslt_MA_WB), //resultado do ALU a ser colocado no pipeline register MA/WB
         .o_ma_WB(o_ma_WB), //sinais de controlo da write back a serem colocados no pipeline register MA/WB
         .o_ma_EX_MEM_Rs2(),//colocar o endere�o do source register 2 na forward unit,
         .o_ma_EX_MEM_MA(HU_MEM_RW),
         .o_miss(Dmiss), // falha no acesso de mem�ria
         .o_ma_mem_out(Data_Mem_MA_WB)
     );
-
+    
+        /*wire [31:0] PCSrc_MA_WB;
+        wire [31:0] Data_Mem_MA_WB;
+        wire [31:0] ALU_Rslt_MA_WB;
+        wire [2:0] o_ma_WB;
+        wire [4:0] RDS_MA_WB;
+        wire [31:0] WB_RdsAddr;*/
+        //wire [2:0] WB_RWE;
+        //wire [31:0] DataFromWB;
+        
     stage_wb WBack (
 
         .clk(Clk),
@@ -190,6 +269,23 @@ module processor(
         .o_wb_reg_dst_s()// select mux out
     );
 
+    //need this desclaration
+    //gives an error if they are not here, gives warning when they are not here.
+        wire [1:0] HU_MEM_RW;
+        wire [2:0] MA_EX_MA;
+        //wire [2:0] WB_RWE;
+    
+       /* wire [4:0] w_Rs1_addr;
+        wire [4:0] w_Rs2_addr;
+        wire [4:0] Rdsaddr_EX_MA;
+        wire [4:0] WB_RdsAddr;
+        wire [1:0] EX_Op1_ExS;
+        wire [1:0] EX_Op2_ExS;
+        wire [1:0] BR_CBI;*/
+        wire [1:0] EX_NPC;
+        /*wire [3:0] condCodes;
+        wire [3:0] condBits;*/
+        
     HazardUnit HazardU(
          //FORWARD UNIT
          
@@ -199,11 +295,11 @@ module processor(
          .IDex__Rs2(w_Rs2_addr),
          .EXmem__RW_MEM(HU_MEM_RW[`MA_RW]),
          .EXmem__MemEnable(HU_MEM_RW[`MA_EN]),
-         .EXmem__R_WE(MA_EX_MA[`WB_R_WE]),
+         .EXmem__R_WE(WB_EX_MA[`WB_R_WE]),
          .EXmem__Rdst(Rdsaddr_EX_MA),
          .EXmem__RDst_S(MA_EX_MA[`WB_RDST_MUX]),
          .MEMwb__Rdst(WB_RdsAddr),
-         .MEMwb__R_WE(WB_RWE[`WB_R_WE]),
+         .MEMwb__R_WE(WB_RWE),
          .OP1_ExS(EX_Op1_ExS),
          .OP2_ExS(EX_Op2_ExS),
 

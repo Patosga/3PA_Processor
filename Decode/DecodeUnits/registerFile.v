@@ -40,41 +40,41 @@ module registerFile(
 always@ (posedge clk) 
 begin
     if(reset) begin
-        buff[ 0] = 0;                                                                                                                                                                                                                  
-        buff[ 1] = 0;                                                                                                                                                                                                                  
-        buff[ 2] = 0;                                                                                                                                                                                                                  
-        buff[ 3] = 0;                                                                                                                                                                                                                  
-        buff[ 4] = 0;                                                                                                                                                                                                                  
-        buff[ 5] = 0;                                                                                                                                                                                                                  
-        buff[ 6] = 0;                                                                                                                                                                                                                  
-        buff[ 7] = 0;                                                                                                                                                                                                                  
-        buff[ 8] = 0;                                                                                                                                                                                                                  
-        buff[ 9] = 0;                                                                                                                                                                                                                  
-        buff[10] = 0;                                                                                                                                                                                                                  
-        buff[11] = 0;                                                                                                                                                                                                                  
-        buff[12] = 0;                                                                                                                                                                                                                  
-        buff[13] = 0;                                                                                                                                                                                                                  
-        buff[14] = 0;                                                                                                                                                                                                                  
-        buff[15] = 0;                                                                                                                                                                                                                  
-        buff[16] = 0;                                                                                                                                                                                                                  
-        buff[17] = 0;                                                                                                                                                                                                                  
-        buff[18] = 0;                                                                                                                                                                                                                  
-        buff[19] = 0;                                                                                                                                                                                                                  
-        buff[20] = 0;                                                                                                                                                                                                                  
-        buff[21] = 0;                                                                                                                                                                                                                  
-        buff[22] = 0;                                                                                                                                                                                                                  
-        buff[23] = 0;                                                                                                                                                                                                                  
-        buff[24] = 0;                                                                                                                                                                                                                  
-        buff[25] = 0;                                                                                                                                                                                                                  
-        buff[26] = 0;                                                                                                                                                                                                                  
-        buff[27] = 0;                                                                                                                                                                                                                  
-        buff[28] = 0;                                                                                                                                                                                                                  
-        buff[29] = 0;                                                                                                                                                                                                                  
-        buff[30] = 0;                                                                                                                                                                                                                  
-        buff[31] = 0;
+        buff[ 0] <= 0;                                                                                                                                                                                                                  
+        buff[ 1] <= 0;                                                                                                                                                                                                                  
+        buff[ 2] <= 0;                                                                                                                                                                                                                  
+        buff[ 3] <= 0;                                                                                                                                                                                                                  
+        buff[ 4] <= 0;                                                                                                                                                                                                                  
+        buff[ 5] <= 0;                                                                                                                                                                                                                  
+        buff[ 6] <= 0;                                                                                                                                                                                                                  
+        buff[ 7] <= 0;                                                                                                                                                                                                                  
+        buff[ 8] <= 0;                                                                                                                                                                                                                  
+        buff[ 9] <= 0;                                                                                                                                                                                                                  
+        buff[10] <= 0;                                                                                                                                                                                                                  
+        buff[11] <= 0;                                                                                                                                                                                                                  
+        buff[12] <= 0;                                                                                                                                                                                                                  
+        buff[13] <= 0;                                                                                                                                                                                                                  
+        buff[14] <= 0;                                                                                                                                                                                                                  
+        buff[15] <= 0;                                                                                                                                                                                                                  
+        buff[16] <= 0;                                                                                                                                                                                                                  
+        buff[17] <= 0;                                                                                                                                                                                                                  
+        buff[18] <= 0;                                                                                                                                                                                                                  
+        buff[19] <= 0;                                                                                                                                                                                                                  
+        buff[20] <= 0;                                                                                                                                                                                                                  
+        buff[21] <= 0;                                                                                                                                                                                                                  
+        buff[22] <= 0;                                                                                                                                                                                                                  
+        buff[23] <= 0;                                                                                                                                                                                                                  
+        buff[24] <= 0;                                                                                                                                                                                                                  
+        buff[25] <= 0;                                                                                                                                                                                                                  
+        buff[26] <= 0;                                                                                                                                                                                                                  
+        buff[27] <= 0;                                                                                                                                                                                                                  
+        buff[28] <= 0;                                                                                                                                                                                                                  
+        buff[29] <= 0;                                                                                                                                                                                                                  
+        buff[30] <= 0;                                                                                                                                                                                                                  
+        buff[31] <= 0;
     end
     else if(we) begin
-        buff[iWAddr] = iWData;
+        buff[iWAddr] <= iWData;
     end
     
 end

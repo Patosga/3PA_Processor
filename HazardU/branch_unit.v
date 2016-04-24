@@ -34,7 +34,8 @@ module branch_unit(
     
     );
     
-    wire [7:0] inputcat = {PcMatchValid,JumpTaken,BranchInstr,JumpInstr,PredicEqRes,CtrlIn};  
+    //changed here
+    wire [6:0] inputcat = {PcMatchValid,JumpTaken,BranchInstr,JumpInstr,PredicEqRes,CtrlIn};  
     
     always @(inputcat)
     begin  

@@ -26,7 +26,8 @@ module HazardUnit(
     input IDex__Need_Rs1,
     input [4:0] IDex__Rs1,
     input [4:0] IDex__Rs2,
-    input EXmem__Read_MEM,
+    input EXmem__RW_MEM,
+    input EXmem__MemEnable,
     input EXmem__R_WE,
     input [4:0] EXmem__Rdst,
     input [1:0] EXmem__RDst_S,
@@ -72,7 +73,9 @@ module HazardUnit(
         .IDex__Rs1(IDex__Rs1),
         .IDex__Rs2(IDex__Rs2),
         //////////////////////EX_MEM REG
-        .EXmem__Read_MEM(EXmem__Read_MEM),
+        .EXmem__RW_MEM(EXmem__RW_MEM),  //changed here
+        .EXmem__MemEnable(EXmem__RW_MEM),//changed here
+        //deleted here
         .EXmem__R_WE(EXmem__R_WE),
         .EXmem__Rdst(EXmem__Rdst),
         .EXmem__RDst_S(EXmem__RDst_S),

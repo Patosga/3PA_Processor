@@ -50,4 +50,6 @@ module Stall_Unit(
     assign o_EXMA_Flush = i_Need_Stall & ~i_DCache_Miss;
     assign o_MAWB_Flush = i_DCache_Miss;
     
+    assign o_IDEX_Flush = 0; //shouldn't be here
+    
 endmodule

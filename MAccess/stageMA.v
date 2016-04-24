@@ -37,9 +37,9 @@ module stageMA(
     input i_ma_flush,
     input i_ma_stall,
     
-    output[`WIDTH-1:0] o_ma_PC, //program counter para ser colocado no pipeline register MA/WB
-    output[4:0] o_ma_Rds, //endere�o do registo de sa�da
-    output [`WIDTH-1:0] o_ALU_rsl, //resultado do ALU a ser colocado no pipeline register MA/WB
+    output [`WIDTH-1:0] o_ma_PC, //program counter para ser colocado no pipeline register MA/WB
+    output [4:0] o_ma_Rdst, //endere�o do registo de sa�da
+    output [`WIDTH-1:0] o_ma_ALU_rslt, //resultado do ALU a ser colocado no pipeline register MA/WB
     output [2:0] o_ma_WB, //sinais de controlo da write back a serem colocados no pipeline register MA/WB
     output [4:0] o_ma_EX_MEM_Rs2,//colocar o endere�o do source register 2 na forward unit,
     output [1:0] o_ma_EX_MEM_MA,
@@ -52,7 +52,7 @@ module stageMA(
     wire[4:0] ma_Rdst; //endere?o do registo de sa?da
     wire [`WIDTH-1:0] ma_ALU_rslt; //resultado do ALU a ser colocado no pipeline register MA/WB
     wire [`WIDTH-1:0] mem_data;
-    wire [2:0] _ma_WB; //sinais de controlo da write back a serem colocados no pipeline register MA/WB
+    wire [2:0] ma_WB; //sinais de controlo da write back a serem colocados no pipeline register MA/WB
     wire [`MAWB_WIDTH-1:0] o_ma;
     
     MemoryAccess memory_access(

@@ -44,7 +44,7 @@ rom rom(
 assign Data =   (Rst)     ?     0:  
                 (En)      ?     o_rom: 
                                 Data;
-                                        
+assign Imiss = 0;                          
 /*initial
       $readmemh("v.out",mem);    // init memory
       */

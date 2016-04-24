@@ -23,7 +23,7 @@ module PCUpdate(
     input Clk,
     input Rst,
     output [31:0] PC,
-    output [31:0] InstrAddr,
+    output reg [31:0] InstrAddr, //changed here
     input FlushPipeandPC,
     input PCStall,
     input [31:0] Predict,
@@ -31,10 +31,10 @@ module PCUpdate(
     input [31:0] JmpAddr
     );
     
-    reg  [31:0]    InstrAddr;
+    //reg  [31:0]    InstrAddr;     //changed here
     wire [31:0]    new_InstrAddr;
 
-    wire     [31:0] 	PC;											// Program Counter    
+    //wire     [31:0] 	PC;		//change here									// Program Counter    
     
     
     
