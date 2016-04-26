@@ -51,7 +51,7 @@ module PredictCache(
     output PC_Source            //1-Usar o Prediction PC 0-Usar o PC+4
     );
 
-reg [`CacheWidth-1:0] cache [`CacheNumLines-1:0];   //cache de CacheWidth bits com CacheLines linhas(endere??vel a 3 bits)
+(* dont_touch = "true" *) reg [`CacheWidth-1:0] cache [`CacheNumLines-1:0];   //cache de CacheWidth bits com CacheLines linhas(endere??vel a 3 bits)
 wire [`CacheWidth-1:0] RcacheLine;               //Cache line que est? a ser lida
 
 //wire [2:0] WcacheLine = WAddr[`CacheAddrBits]; //Cache line respetiva ao Write Address
