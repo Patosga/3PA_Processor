@@ -40,14 +40,14 @@ module branch_unit(
     always @(inputcat)
     begin  
     
-    casex(inputcat)
+    case(inputcat)
     
         7'bxx00xxx : 
         begin
-        CtrlOut <= 2'bxx;
+        CtrlOut <= 2'b0;
         FlushPipePC <= 1'b0;
         WriteEnable <= 1'b0;
-        NPC <= 2'bxx;       
+        NPC <= 2'b0;       
         end
         
         7'b1x010xx: 

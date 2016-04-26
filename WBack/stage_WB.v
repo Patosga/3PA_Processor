@@ -41,7 +41,7 @@ module stage_wb(
     
   //MUX  
   assign o_wb_mux = mux_sel[1]? ( mux_sel[0]? 32'hxxxxxxxx : i_wb_pc ) : 
-                                 (mux_sel[0]? i_wb_data_o_ma : i_wb_alu_rslt);
+                                 (mux_sel[0]? i_wb_alu_rslt : i_wb_data_o_ma );
     
   //ASSIGN OF INPUT TO OUTPUTS PROPAGATION 
   assign o_wb_reg_write_rf = i_wb_cntrl[`WB_R_WE];

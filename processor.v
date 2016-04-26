@@ -66,14 +66,16 @@ module processor(
     wire [33:0] EX_PPCCB;
     wire [31:0] EX_PC;
     wire [4:0] EX_Rds;
-    /*wire [4:0] EX_Rs1;
-    wire [4:0] EX_Rs2;*/
+    wire [4:0] EX_Rs1; //tem-se que declarar antes de usar senão declara implicitamente como um fio de 1 bit
+    wire [4:0] EX_Rs2; //tem-se que declarar antes de usar senão declara implicitamente como um fio de 1 bit
     wire [31:0] EX_Op1;
     wire [31:0] EX_Op2;
     wire [31:0] EX_Im;
     wire [14:0] EX_ExCtrl;
     wire [1:0] EX_MA;
     wire [2:0] EX_WB;
+    
+    wire [31:0] DataFromWB; //tem-se que declarar antes de usar senão declara implicitamente como um fio de 1 bit
     
     IDControlUnit decode(
          .Clk(Clk),
@@ -112,7 +114,7 @@ module processor(
          .oWB(EX_WB)
     );
 
-        wire [31:0] DataFromWB;
+        
         wire [31:0] ALU_Rslt_MA_WB;              
         wire [1:0] EX_Op1_ExS;
         wire [1:0] EX_Op2_ExS;
@@ -120,8 +122,8 @@ module processor(
         /*wire [2:0] EX_WB;
         wire [1:0] EX_MA;        
         wire [14:0] EX_ExCtrl;*/
-        wire [4:0] EX_Rs1;             //OP1
-        wire [4:0] EX_Rs2;             //OP2
+        //wire [4:0] EX_Rs1;             //OP1
+        //wire [4:0] EX_Rs2;             //OP2
         /*wire [31:0] EX_Im;       //  
         wire [4:0] EX_Op1;
         wire [4:0] EX_Op2;
@@ -220,11 +222,15 @@ module processor(
         wire [2:0] o_ma_WB;
         wire [31:0] Data_Mem_MA_WB;              
         
+        wire [1:0] HU_MEM_RW; //tem-se que declarar antes de usar senão declara implicitamente como um fio de 1 bit
+        wire [2:0] MA_EX_MA2;  //MA_EX_MA já foi declarado, mas com um bit a menos antes do execute
+        //wire [1:0] EX_NPC;    //EX_NPC já foi declarado antes do execute
+        
     stageMA MAccesss(
         .clk(Clk),//clock
         .rst(Rst),//reset
         .i_ma_WB(WB_EX_MA),//write_back control signal
-        .i_ma_MA(MA_EX_MA),//memory access control signals
+        .i_ma_MA(MA_EX_MA2),//memory access control signals
         .i_ma_ALU_rslt(ALUrslt_EX_MA),// resultado da ALU
         .i_ma_Rs2_val(Rs2val_EX_MA), //valor do regiter source 2
         .i_ma_Rs2_addr(Rs2addr_EX_MA), //endere?o do registo do register source 2
@@ -271,8 +277,7 @@ module processor(
 
     //need this desclaration
     //gives an error if they are not here, gives warning when they are not here.
-        wire [1:0] HU_MEM_RW;
-        wire [2:0] MA_EX_MA;
+        
         //wire [2:0] WB_RWE;
     
        /* wire [4:0] w_Rs1_addr;
@@ -282,7 +287,7 @@ module processor(
         wire [1:0] EX_Op1_ExS;
         wire [1:0] EX_Op2_ExS;
         wire [1:0] BR_CBI;*/
-        wire [1:0] EX_NPC;
+        
         /*wire [3:0] condCodes;
         wire [3:0] condBits;*/
         
@@ -297,7 +302,7 @@ module processor(
          .EXmem__MemEnable(HU_MEM_RW[`MA_EN]),
          .EXmem__R_WE(WB_EX_MA[`WB_R_WE]),
          .EXmem__Rdst(Rdsaddr_EX_MA),
-         .EXmem__RDst_S(MA_EX_MA[`WB_RDST_MUX]),
+         .EXmem__RDst_S(MA_EX_MA2[`WB_RDST_MUX]),
          .MEMwb__Rdst(WB_RdsAddr),
          .MEMwb__R_WE(WB_RWE),
          .OP1_ExS(EX_Op1_ExS),

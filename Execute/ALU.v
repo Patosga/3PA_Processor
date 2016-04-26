@@ -54,7 +54,9 @@ module ALU(
     );
     
     reg c; //Auxiliar to carry out determination
-    wire subt = (i_ALU_Ctrl == `ALU_SUB); //In case it's a subb operation
+    wire subt;
+    assign subt = (i_ALU_Ctrl == `ALU_SUB)  ?   1'b1:
+                                                1'b0; //In case it's a subb operation
  
 
    

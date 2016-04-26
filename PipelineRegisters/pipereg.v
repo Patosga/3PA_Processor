@@ -35,9 +35,9 @@ module  pipereg (
     if(rst)
        out <= {WIDTH{1'b0}};
     else 
-       out <= stall == 1 ? out :
-              flush == 1 ? {WIDTH{1'b0}}  :
-                           in  ;
+       out <= (stall == 1'b1) ?    out :
+              (flush == 1'b1) ?    {WIDTH{1'b0}}  :
+                                   in  ;
     end
     
 endmodule

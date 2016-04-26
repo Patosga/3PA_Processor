@@ -70,23 +70,23 @@ module IF(
     );
 
     wire [`IFID_WIDTH-1:0]in;
-    assign in = (Rst)          ?      0:
+    assign in = (Rst)          ?      1'b0:
                                       {InstrAddr_w,CB_w,Predict_w,PC_w,PCSource_w,IR_w};
 
     wire [`IFID_WIDTH-1:0]out;
-    assign IR = (Rst)          ?      0:
+    assign IR = (Rst)          ?      32'b0:
                                       out[`IFID_INST];
     
-    assign PC = (Rst)          ?      0:
+    assign PC = (Rst)          ?      32'b0:
                                       out[`IFID_PC];
                                       
-    assign InstrAddr = (Rst)   ?      0:
+    assign InstrAddr = (Rst)   ?      32'b0:
                                       out[`IFID_IC];
                                       
-    assign PPCCB = (Rst)       ?      0:                 
+    assign PPCCB = (Rst)       ?      34'b0:                 
                                       out[`IFID_PPCCB];
                                       
-    assign PCSource = (Rst)    ?      0:   
+    assign PCSource = (Rst)    ?      1'b0:   
                                       out[`IFID_VALID];
     
    

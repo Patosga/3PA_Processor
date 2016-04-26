@@ -51,7 +51,8 @@ reg [`WIDTH-1:0] r_Alu_Src1;
 reg [`WIDTH-1:0] r_Alu_Src2;
 
 /*ALU second input selection*/
-assign o_Op2 = (i_ALU_src2_Ctrl == 0) ? r_Alu_Src2 : i_Immediate;
+assign o_Op2 = (i_ALU_src2_Ctrl == 0) ? r_Alu_Src2 : 
+                                        i_Immediate;
 
 /*Bypass data to store in memory (Store instruction)*/
 assign o_Store_Data = r_Alu_Src2;

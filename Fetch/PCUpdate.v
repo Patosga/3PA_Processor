@@ -38,17 +38,25 @@ module PCUpdate(
     
     
     
-    always@ (posedge Clk)
-    begin
-        InstrAddr <= new_InstrAddr; 
-    end
+
     
-    assign PC = (Rst)                       ?  0 :
+    assign PC = (Rst)                       ?  32'b0 :
                                                InstrAddr+4'b0100;     
     
     assign new_InstrAddr = (Rst)            ?  32'b0:
                            (FlushPipeandPC) ?  JmpAddr:
-                           (PCStall)        ?  InstrAddr:                            (PCSource)  ?  Predict:
+                           (PCStall)        ?  InstrAddr:                           
+                           (PCSource)       ?  Predict:
                                                PC;
-                           
+         
+         
+    always@ (posedge Clk)
+    begin
+    if(Rst)
+        InstrAddr <= 32'b0;
+    else
+       InstrAddr <= new_InstrAddr; 
+    end  
+    
+                            
 endmodule

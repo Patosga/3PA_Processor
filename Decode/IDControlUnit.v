@@ -62,6 +62,8 @@ module IDControlUnit(
     wire iR2Select;
     
     ControlUnit cUnit(
+    .Clk(Clk),
+    .reset(reset),
     .opcode(iIR[`OPCODE]),
     .bit16(iIR[16]),
     .CondBits(iIR[`CondBits]),

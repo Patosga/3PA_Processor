@@ -50,7 +50,7 @@ module FU(
                      ( (MEMwb__R_WE) && (IDex__Need_Rs2) && (EXmem__Rdst!=IDex__Rs2) && (MEMwb__Rdst==IDex__Rs2) )       ?   2'b01: 
                                                                                                                              2'b00;
                                                                                                                             
-    assign Need_Stall = ( (!EXmem__RW_MEM && EXmem__MemEnable) && ( ((IDex__Need_Rs1) && (EXmem__Rdst==IDex__Rs1)) || ((IDex__Need_Rs2) && (EXmem__Rdst==IDex__Rs2)) ))     ?   1'b1:
+    assign Need_Stall =   ( (!EXmem__RW_MEM && EXmem__MemEnable) && ( ((IDex__Need_Rs1) && (EXmem__Rdst==IDex__Rs1)) || ((IDex__Need_Rs2) && (EXmem__Rdst==IDex__Rs2)) ))     ?   1'b1:
                                                                                                                                                              1'b0;
                               
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

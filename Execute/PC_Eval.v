@@ -38,9 +38,11 @@ module PC_Eval(
     	);
     
     /*New Program Counter Selection*/
-    assign o_New_PC = (i_NPC_Ctrl == 1) ? i_PC : i_ALU_rslt;
+    assign o_New_PC = (i_NPC_Ctrl == 1) ?   i_PC : 
+                                            i_ALU_rslt;
 
     /*Check if the result of the predicted PC is equal to the ALU result (1 is equal / 0 not equal)*/
-    assign o_PPC_Eq = (i_PPC == i_ALU_rslt);  
+    assign o_PPC_Eq = (i_PPC == i_ALU_rslt)     ?   1'b1:   
+                                                    1'b0;  
     
 endmodule

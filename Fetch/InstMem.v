@@ -31,11 +31,11 @@ module ROM(
 
 wire [31:0] o_rom;
 
-wire [5:0] Address_LSBs;
-assign Address_LSBs = Addr[5:0] /4;
+//wire [5:0] Address_LSBs;
+//assign Address_LSBs = Addr[5:0] /4;
 
 rom rom(
-    .a(Address_LSBs),
+    .a(Addr[7:2]),
     .spo(o_rom)
 );
  

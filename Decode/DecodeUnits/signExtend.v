@@ -27,9 +27,10 @@ module signExtend(
     output [31:0] imm_o
     );
     
-    assign imm_o =  (msb == `EXT16) ? {{(31-15){imm_i[15]}},imm_i[15:0]} : 
-                        (msb == `EXT17) ? {{(31-16){imm_i[16]}},imm_i[16:0]} :
-                            (msb == `EXT22) ? {{(31-21){imm_i[21]}},imm_i[21:0]} : 
-                                (msb == `EXT23) ? {{(31-22){imm_i[22]}},imm_i[22:0]} : 0;
+    assign imm_o =  (msb == `EXT16)     ?       {{(31-15){imm_i[15]}},imm_i[15:0]} : 
+                    (msb == `EXT17)     ?       {{(31-16){imm_i[16]}},imm_i[16:0]} :
+                    (msb == `EXT22)     ?       {{(31-21){imm_i[21]}},imm_i[21:0]} : 
+                    (msb == `EXT23)     ?       {{(31-22){imm_i[22]}},imm_i[22:0]} : 
+                                                                0;
     
 endmodule
