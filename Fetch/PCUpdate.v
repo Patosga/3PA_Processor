@@ -22,7 +22,7 @@
 module PCUpdate(
     input Clk,
     input Rst,
-    output [31:0] PC,
+    output reg [31:0] PC,
     output reg [31:0] InstrAddr, //changed here
     input FlushPipeandPC,
     input PCStall,
@@ -33,6 +33,7 @@ module PCUpdate(
     
     //reg  [31:0]    InstrAddr;     //changed here
     wire [31:0]    new_InstrAddr;
+  //  wire [31:0] new_PC;
 
     //wire     [31:0] 	PC;		//change here									// Program Counter    
     
@@ -40,8 +41,8 @@ module PCUpdate(
     
 
     
-    assign PC = (Rst)                       ?  32'b0 :
-                                               InstrAddr+4'b0100;     
+   // assign new_PC =/* (Rst)               ? 32'b0:   */              
+    //                                      InstrAddr+4'b0100;     
     
     assign new_InstrAddr = (Rst)            ?  32'b0:
                            (FlushPipeandPC) ?  JmpAddr:
@@ -53,9 +54,16 @@ module PCUpdate(
     always@ (posedge Clk)
     begin
     if(Rst)
-        InstrAddr <= 32'b0;
+    begin
+            PC <= 32'b0;
+            InstrAddr <= 32'b0;
+    end
     else
-       InstrAddr <= new_InstrAddr; 
+    begin
+            InstrAddr = new_InstrAddr; 
+            PC =  InstrAddr +4'b0100;
+            
+    end
     end  
     
                             
